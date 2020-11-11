@@ -62,4 +62,37 @@ and be removed ( not however removing the 3 data directories ) with
 docker-compose down
 ```
 
+# Webbooks
 
+Gogs, like other Github like hosted repositories, can emit events via sending `POST` event to an api endpoint.
+
+## gogs-private-repo_webhook node app
+
+To see this working and to test out Gogs 'webhook' features, this compose config also bundles a
+simple Node app that will start up on port 4000. It accepts json 'POST' data at the url '/data'. 
+
+this can be tested with `curl` :
+
+```
+curl --location --request POST 'http://<ip address or hostname of docker host>:4000/data' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "json-parsing": "just with json",
+    "no": "body-parser"
+}'
+```
+
+The docker-compose script configures the node app to run a script called `do_something.sh` located in the scripts directory of webhookapp. This may be changed to run anything from within the running
+container that the container permits but it will need changed to access a repository that is running on the Gogs service. The script should be self explanatory in this regard and uses an API key created in Gogs under `Your Settings` ( top right user icon ) => `Applications` => `Generate New Token`. The example script checks out and pulls the latest updates from one of the repositories hosted in the Gogs server instance.
+
+## Enabling webhooks in Gogs
+
+Inside of a repository in Gogs under `Settings` => `Webhooks` add a new webhook of type `Gogs`.
+
+For Payload URL enter the url of the node app ( using the IP address / hostname of the Docker node that was configured in `.env` when configuring the app ), for example :
+
+> http://gogs-server.localnet:4000/data
+
+default of 'just the push event' should be sufficent but there is fine grained control over what events to trigger the web hook under 'Let me choose what I need'.
+
+Use `Test Delivery` to check this is working and save the config. This will run a `POST` to the endpoint, backing up the repository ( in the case of the example script ) to a mounted directory on the host.
