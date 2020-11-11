@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  repo:
+    build: ./repo
+    ports:
+      - "3333:3333"
+    volumes:
+    - ./repo/data:/app/gogs/data
+    - ./repo/repositories:/app/gogs/repositories
+    - ./repo/custom/conf:/app/gogs/custom/conf    
+  webhook:
+    build: ./webhookapp
+    ports:
+      - "4000:4000"  
+    volumes:
+    - ./webhookapp/scripts:/app/scripts
+    environment:
+      - SYSTEM_COMMAND="/app/scripts/do_something.sh"
+    

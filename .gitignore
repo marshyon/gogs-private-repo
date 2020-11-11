@@ -1,0 +1,4 @@
+repo/repositories
+backups
+*.db
+.env
