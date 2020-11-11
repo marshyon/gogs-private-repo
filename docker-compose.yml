@@ -7,7 +7,8 @@ services:
     volumes:
     - ./repo/data:/app/gogs/data
     - ./repo/repositories:/app/gogs/repositories
-    - ./repo/custom/conf:/app/gogs/custom/conf    
+    - ./repo/custom/conf:/app/gogs/custom/conf   
+    restart: always 
   webhook:
     build: ./webhookapp
     ports:
@@ -16,4 +17,5 @@ services:
     - ./webhookapp/scripts:/app/scripts
     environment:
       - SYSTEM_COMMAND="/app/scripts/do_something.sh"
+    restart: always     
     
